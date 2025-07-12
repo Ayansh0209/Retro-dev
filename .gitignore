@@ -7,3 +7,4 @@ node_modules
 
 
 extension/.vscode-test/
+Backend/services/google-api.json
