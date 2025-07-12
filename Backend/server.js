@@ -3,6 +3,13 @@ const app = express()
 const port = 3000
 const authRoutes = require('./routes/auth')
 const gitRoutes = require('./routes/git')
+const cors = require('cors');
+
+app.use(cors({
+  origin: '*', 
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 app.use(express.json());
 
