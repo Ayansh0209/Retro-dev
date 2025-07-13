@@ -140,4 +140,5 @@ Contributions and feedback are welcome. Please open issues or pull requests to h
 
 ## License
 
-MIT License
+
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
