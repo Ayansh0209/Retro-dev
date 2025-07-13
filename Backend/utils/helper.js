@@ -13,39 +13,51 @@ async function fetchJSON(url, authHeader) {
   return res.json();
 }
 
-async function Gitdata(authHeader) {
-  const repoPath = process.env.REPO_PATH; 
+async function Gitdata(authHeader, repoPath) {
   if (!repoPath) {
-    console.error(' Missing REPO_PATH in environment');
+    console.error(' Missing REPO_PATH in Gitdata');
     return 'Git context could not be fetched: Missing REPO_PATH';
   }
 
   const queryParam = `?repoPath=${encodeURIComponent(repoPath)}`;
   const baseURL = 'http://localhost:3000/git';
 
-  try {
-    const [branch, status, isClean, log, tracked, diff] = await Promise.all([
-      fetchJSON(`${baseURL}/branch${queryParam}`, authHeader),
-      fetchJSON(`${baseURL}/status${queryParam}`, authHeader),
-      fetchJSON(`${baseURL}/is-clean${queryParam}`, authHeader),
-      fetchJSON(`${baseURL}/log${queryParam}`, authHeader),
-      fetchJSON(`${baseURL}/track-files${queryParam}`, authHeader),
-      fetchJSON(`${baseURL}/diff${queryParam}`, authHeader),
-    ]);
+  const safeFetch = async (url) => {
+    try {
+      return await fetchJSON(url, authHeader);
+    } catch (err) {
+      console.warn(`⚠️ Failed to fetch ${url}:`, err.message);
+      return null;
+    }
+  };
 
-    return `
+  const [
+    branch,
+    status,
+    isClean,
+    log,
+    tracked,
+    diff
+  ] = await Promise.all([
+    safeFetch(`${baseURL}/branch${queryParam}`),
+    safeFetch(`${baseURL}/status${queryParam}`),
+    safeFetch(`${baseURL}/is-clean${queryParam}`),
+    safeFetch(`${baseURL}/log${queryParam}`),
+    safeFetch(`${baseURL}/track-files${queryParam}`),
+    safeFetch(`${baseURL}/diff${queryParam}`)
+  ]);
+
+  return `
 Git Context:
-Branch: ${branch.current}
-Clean Working Directory: ${isClean.clean}
-Status: ${JSON.stringify(status.status, null, 2)}
-Tracked Files: ${Array.isArray(tracked.tracked) ? tracked.tracked.join(', ') : 'None'}
-Recent Commits:\n${log.all && log.all.length ? log.all.map(l => `- ${l.message}`).join('\n') : 'No commits'}
-Diff:\n${diff.diff || 'No diff'}
-    `.trim();
-  } catch (err) {
-    console.error('Error building Git context:', err.message);
-    return 'Git context could not be fetched.';
-  }
+Branch: ${branch?.current || 'Unknown'}
+Clean Working Directory: ${isClean?.clean ?? 'Unknown'}
+Status: ${status?.status ? JSON.stringify(status.status, null, 2) : 'Unavailable'}
+Tracked Files: ${Array.isArray(tracked?.tracked) ? tracked.tracked.join(', ') : 'None'}
+Recent Commits:\n${log?.all?.length ? log.all.map(l => `- ${l.message}`).join('\n') : 'No commits'}
+Diff:\n${diff?.diff || 'No diff'}
+`.trim();
 }
+
+
 
 module.exports = { Gitdata };
