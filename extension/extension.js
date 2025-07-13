@@ -7,22 +7,36 @@ class GitWhizViewProvider {
 
   resolveWebviewView(webviewView) {
     this.webviewView = webviewView;
-     const folderPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
+    const folderPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
 
     webviewView.webview.options = {
       enableScripts: true,
+      enableForms: true,
+      enableCommandUris: true,
+      allowPopups: true, 
       localResourceRoots: [
         vscode.Uri.joinPath(this.context.extensionUri, 'media'),
       ],
     };
-     webviewView.webview.onDidReceiveMessage(async (msg) => {
-    if (msg.command === 'getWorkspacePath') {
-      webviewView.webview.postMessage({
-        command: 'workspacePath',
-        path: folderPath,
-      });
+
+   webviewView.webview.onDidReceiveMessage(async (msg) => {
+  if (msg.command === 'getWorkspacePath') {
+    webviewView.webview.postMessage({
+      command: 'workspacePath',
+      path: folderPath,
+    });
+  }
+
+ 
+  if (msg.command === 'openLogin' && msg.url) {
+    try {
+      await vscode.env.openExternal(vscode.Uri.parse(msg.url));
+    } catch (error) {
+      console.error('Failed to open external URL:', error);
     }
-  });
+  }
+});
+
 
     webviewView.webview.html = this.getWebviewContent();
   }

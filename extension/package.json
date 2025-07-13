@@ -6,12 +6,8 @@
   "engines": {
     "vscode": "^1.101.0"
   },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "onView:gitwhizSidebarView"
-  ],
+  "categories": ["Other"],
+  "activationEvents": ["onView:gitwhizSidebarView"],
   "main": "./extension.js",
   "contributes": {
     "viewsContainers": {
@@ -30,7 +26,13 @@
           "name": "GitWhiz Terminal",
           "type": "webview",
           "icon": "$(terminal)",
-          "contextualTitle": "GitWhiz"
+          "contextualTitle": "GitWhiz",
+          "webview": {
+            "retainContextWhenHidden": true,
+            "sandbox": {
+              "allowPopups": true
+            }
+          }
         }
       ]
     },

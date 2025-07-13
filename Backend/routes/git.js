@@ -3,7 +3,7 @@ const router = express.Router();
 const simpleGit = require('simple-git');
 const verifyToken = require('../middleware/verifyTok');
 const { exec } = require('child_process');
-const { GeminiRes } = require('../services/Googleai');
+const { GeminiRes } = require('../services/googleai');
 const { Gitdata } = require('../utils/helper');
 
 router.get('/status', verifyToken, async (req, res) => {

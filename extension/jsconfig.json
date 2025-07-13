@@ -1,13 +1,16 @@
 {
-	"compilerOptions": {
-		"module": "Node16",
-		"target": "ES2022",
-		"checkJs": true,  /* Typecheck .js files. */
-		"lib": [
-			"ES2022"
-		]
-	},
-	"exclude": [
-		"node_modules"
-	]
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "allowJs": true,
+    "checkJs": false,            // Prevent TS from showing JSX errors in .js
+    "moduleResolution": "Node",
+    "baseUrl": "."
+  },
+  "include": [
+    "media/**/*",
+    "utils/**/*",
+    "extension.js"
+  ]
 }

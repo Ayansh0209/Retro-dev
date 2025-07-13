@@ -98,4 +98,34 @@ ${systemPrompt.trim()}
   }
 }
 
-module.exports = { GeminiRes };
+/**
+ * Summarize GitHub notifications using Gemini
+ * @param {Array} notifications - GitHub notifications
+ * @param {(line: string) => void} onData - Streaming handler
+ */
+/**
+ * Summarize GitHub activity from helper context
+ * @param {string} githubContext - Clean text from GithubData()
+ * @param {(line: string) => void} onData
+ */
+async function summarizeGithubContext(githubContext, onData) {
+  const systemPrompt = `
+You are a GitHub assistant helping users understand their GitHub activity.
+
+Summarize the user's GitHub status in a friendly, natural tone. Highlight:
+- Any PRs, issues, discussions, or mentions
+- Repo activity grouped by project
+- Suggestions or reminders (like pending reviews)
+
+Avoid raw data. Sound like a helpful daily digest.
+`.trim();
+
+  await GeminiRes(githubContext, systemPrompt, onData);
+}
+
+module.exports = {
+  GeminiRes,
+  summarizeGithubContext,
+};
+
+
