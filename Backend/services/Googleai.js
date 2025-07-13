@@ -45,20 +45,7 @@ Strict rules:
 - DO NOT invent or modify real Git commands
 - DO NOT ask "Do you want me to run..." — only ask: "Do you want me to continue?"
 
-Example output:
 
-You want to push changes to a remote Git repository.
-
-→ Add remote if not added  
-→ Commit changes  
-→ Push to origin main
-
-git remote add origin <your_remote_url>  
-git add .  
-git commit -m "message"  
-git push origin main
-
-Do you want me to continue?
 
 ---
 
