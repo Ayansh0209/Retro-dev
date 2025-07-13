@@ -3,6 +3,7 @@ const app = express()
 const port = 3000
 const authRoutes = require('./routes/auth')
 const gitRoutes = require('./routes/git')
+const githubRoutes = require('./routes/github')
 const cors = require('cors');
 
 app.use(cors({
@@ -19,7 +20,7 @@ app.get('/', (req, res) => {
 
 app.use('/auth',authRoutes);
 app.use('/git',gitRoutes);
-
+app.use('/github', githubRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

@@ -123,7 +123,7 @@ const handleLogout = () => {
 if (isGit) {
   try {
     const result = await GitCmd(command, repoPath);
-    const output = result?.result?.trim() || result?.error?.trim() || '  ✅ Command executed, but no output.';
+    const output = result?.result?.trim() || result?.error?.trim() || '    Command executed, but no output.';
     setTerminalHistory(prev => [
       ...prev.filter(entry => entry.id !== loadingId),
       { type: 'ai', text: output }

@@ -1,36 +1,66 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
+class GitWhizViewProvider {
+  constructor(context) {
+    this.context = context;
+  }
 
-/**
- * @param {vscode.ExtensionContext} context
- */
-function activate(context) {
+  resolveWebviewView(webviewView) {
+    this.webviewView = webviewView;
+     const folderPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "retro-dev" is now active!');
+    webviewView.webview.options = {
+      enableScripts: true,
+      localResourceRoots: [
+        vscode.Uri.joinPath(this.context.extensionUri, 'media'),
+      ],
+    };
+     webviewView.webview.onDidReceiveMessage(async (msg) => {
+    if (msg.command === 'getWorkspacePath') {
+      webviewView.webview.postMessage({
+        command: 'workspacePath',
+        path: folderPath,
+      });
+    }
+  });
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with  registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('retro-dev.helloWorld', function () {
-		// The code you place here will be executed every time your command is executed
+    webviewView.webview.html = this.getWebviewContent();
+  }
 
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Retro dev!');
-	});
+  getWebviewContent() {
+    const scriptUri = this.webviewView.webview.asWebviewUri(
+      vscode.Uri.joinPath(this.context.extensionUri, 'media', 'gitwhiz.js'),
+    );
+    const styleUri = this.webviewView.webview.asWebviewUri(
+      vscode.Uri.joinPath(this.context.extensionUri, 'media', 'tailwind-built.css'),
+    );
 
-	context.subscriptions.push(disposable);
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitWhiz</title>
+  <link href="${styleUri}" rel="stylesheet">
+</head>
+<body class="h-full overflow-hidden bg-black text-green-400 font-mono">
+  <div id="root" class="h-full"></div>
+  <script src="${scriptUri}"></script>
+</body>
+</html>`;
+  }
 }
 
-// This method is called when your extension is deactivated
+function activate(context) {
+  const provider = new GitWhizViewProvider(context);
+  const disposable = vscode.window.registerWebviewViewProvider(
+    'gitwhizSidebarView',
+    provider,
+    { webviewOptions: { retainContextWhenHidden: true } },
+  );
+  context.subscriptions.push(disposable);
+}
+
 function deactivate() {}
 
-module.exports = {
-	activate,
-	deactivate
-}
+module.exports = { activate, deactivate };
